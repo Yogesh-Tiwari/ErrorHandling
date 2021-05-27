@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="370f6f9b-8a23-4485-b318-1b3c8a2c5b67" >
+		<file:connection workingDir="C:\Users\21yog\OneDrive\Desktop\DevFnd\APDevFundamentals4.3_studentFiles_29apr2021\resources\input" />
+	</file:config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ea7a934b-eedf-4a14-b4e2-a1ad8f04a55d" basePath="/child" />
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="3e339061-6668-45bc-af9d-4e4be319c80b" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="Copy_of_dw_practiceFlow"
+		doc:id="4d7904d7-3fc2-4b22-bf3e-51684313e288" initialState="stopped">
+		<scheduler doc:name="Copy_of_Scheduler"
+			doc:id="3ea9d509-641a-47e1-8304-60cb52139b2c">
+			<scheduling-strategy>
+				<fixed-frequency frequency="100000" />
+			</scheduling-strategy>
+		</scheduler>
+		<set-payload value="#[[1,2,3,4,5,6,7,8,9]]"
+			doc:name="Copy_of_Set Payload"
+			doc:id="5f16f177-7212-4c75-9ffd-8b2f1b52c666" />
+		<batch:job jobName="Copy_of_processRecordBatchJob"
+			doc:id="a230ed9e-2830-4105-a218-c82e35a179a4" blockSize="1">
+			<batch:process-records>
+				<batch:step name="Copy_of_Batch_StepWithFilter"
+					doc:id="5461619e-f6e4-4b1a-9381-0512416bc4e7"
+					acceptExpression="(payload mod 2) !=0">
+					<ee:transform doc:name="Copy_of_Divide By 3"
+						doc:id="9a9dde6d-2497-4f4a-8346-fa6151536d23">
+						<ee:message>
+							<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload/3]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<batch:aggregator
+						doc:name="Copy_of_Batch Aggregator"
+						doc:id="586848ce-911c-49f1-a684-a53194ece0c6" size="2">
+						<logger level="INFO" doc:name="Copy_of_Logger"
+							doc:id="3c775998-bf92-4604-914e-5d271fd24ca0"
+							message="#[payload]" />
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+	</flow>
+	<flow name="flow02Flow" doc:id="1eed9cb8-8cdb-4163-a641-cee5d735203f" initialState="stopped">
+		<http:listener doc:name="GET /Flie" doc:id="848d6fa0-bea2-4570-ae35-c3b8ffff7780" config-ref="HTTP_Listener_config" path="/test" allowedMethods="GET"/>
+		<set-payload value='#[{&#10;	"account": {&#10;		"accountId": "34334",&#10;		"name": "mary Loo",&#10;		"balance": 90000&#10;	},&#10;	&#10;	"account": {&#10;		"accountId": "3433754",&#10;		"name": "mary Lie",&#10;		"balance": 900034&#10;	},&#10;	&#10;	"account": {&#10;		"accountId": "3433464",&#10;		"name": "Tom Loo",&#10;		"balance": 9243443&#10;	}&#10;}]' doc:name="set to object" doc:id="6912fc21-058f-43e5-b326-4d09d284fe4b" />
+		<foreach doc:name="For Each" doc:id="d22968b9-e693-40fb-8233-155da28c98d8" batchSize="2">
+			<file:write doc:id="f52d2347-0973-4f7c-b04d-8e734bf44911" config-ref="File_Config" path="/output"/>
+		</foreach>
+	</flow>
+	<flow name="parent_flow" doc:id="519b1bff-eca8-4793-8fb2-90f623526f9b" >
+		<http:listener doc:name="GET /getChild" doc:id="8990be70-103d-4e2e-b435-259f48264477" config-ref="HTTP_Listener_config" path="/getChild" allowedMethods="GET"/>
+		<set-payload value="#[[1,2,4]]" doc:name="array payload" doc:id="012821d2-2237-4630-9c8f-6553e0f6a980" />
+		<set-variable value="#[payload[1]]" doc:name="temp_parent" doc:id="e4c142c4-e96e-4677-ba19-8fc5ff3dfdf8" variableName="temp_parent"/>
+		<http:request method="GET" doc:name="Request" doc:id="810487a2-1714-4784-8684-f41db6273fcd" config-ref="HTTP_Request_configuration1" path="/child"/>
+		<logger level="INFO" doc:name="Logger" doc:id="5fc6c858-94a0-4914-87cc-147d928d5060" message="#[vars.temp_parent]"/>
+	</flow>
+	<flow name="child_flow" doc:id="850387c1-f0d7-48b9-9423-285c1907102c" >
+		<http:listener doc:name="GET /child" doc:id="7447f022-9f15-4823-8637-86ccff56fe29" config-ref="HTTP_Listener_config" path="/child" allowedMethods="GET"/>
+		<set-variable value="this_is_child_temp_var" doc:name="tempChild" doc:id="6c013e68-3d79-4e19-ba56-0948671d6813" variableName="tempChild"/>
+		<set-payload doc:name="setChildVar" doc:id="8aca5cc9-0f07-439b-bc1b-dbdf73a8e677" value="#[2]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="e9f0ca06-472d-4b11-8a26-e8cc50d1ca5d" message="#[vars.tempChild]"/>
+	</flow>
+</mule>

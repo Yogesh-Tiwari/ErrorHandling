@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a39dcf90-0845-4965-bcb6-f0e63b524b4c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="dw_practiceFlow" doc:id="b7c221c6-9b5d-4b62-8af1-02ed7cb3dad3" initialState="stopped" >
+		<http:listener doc:name="GET /vartest" doc:id="3fc4599d-18d8-460a-b7c4-31af21890ba6" config-ref="HTTP_Listener_config" path="/vartest" allowedMethods="GET"/>
+		<set-payload value="#[[1,2,3]]" doc:name="Set Payload" doc:id="9e128026-3b4e-4bb6-a68a-7fca1db26f18" />
+		<batch:job jobName="dw_practiceBatch_Job" doc:id="e31d9993-92c0-4317-bbbc-a1c6ba609855" blockSize="1" >
+			<batch:process-records >
+				<batch:step name="Batch_Step1" doc:id="85ef6e8e-2391-4c83-922e-edb28536a216" >
+					<set-variable value="#[payload]" doc:name="setPayload" doc:id="d756e258-4877-4d3d-b2a3-c865682d258c" variableName="setPayload" />
+				</batch:step>
+				<batch:step name="b2" doc:id="dbba0daf-1033-457f-9bc8-58309c95002a" >
+					<set-variable value="#[vars.setPayload+10]" doc:name="setPayload+10" doc:id="7e32b737-6733-4de3-8371-c7a1690ffb4a" variableName="setPayload" />
+					<set-payload value="#[vars.setPayload]" doc:name="Set Payload" doc:id="43a4cfa4-4eec-48db-8ca5-3548fcd8cc2d" />
+					<logger level="INFO" doc:name="Logger" doc:id="94cdfbd2-aa05-43ad-86b1-9da95d36710c" message="#[payload]" />
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+	</flow>
+</mule>

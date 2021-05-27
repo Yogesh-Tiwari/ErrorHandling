@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="errorHandlingFlow" doc:id="efd3f891-0c52-47a4-bcc1-86a5d8f6627a" >
+		<http:listener doc:name="POST /errorCheck" doc:id="2b92f71e-9908-4a18-925b-a3ab381cb6eb" config-ref="HTTP_Listener_config" path="/errorCheck" allowedMethods="POST"/>
+		<foreach doc:name="For Each" doc:id="9447c778-5ee2-4505-9163-57ffa1545eaf" >
+			<try doc:name="Try" doc:id="55c7dc86-bbbc-4af4-8ca1-f9e10f274667" >
+				<validation:is-number doc:id="4f3d6736-ed17-4f3f-ade6-aea769c11b6b" value="#[payload]" numberType="INTEGER" />
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ee61d7ef-3483-400e-bb90-99d91ed0c450" >
+						<logger level="INFO" doc:name="Logger" doc:id="0ba45d73-1461-4a2b-922d-fc96fe737db9" message="Given input is not a number."/>
+					</on-error-propagate>
+				</error-handler>
+			</try>
+			<logger level="INFO" doc:name="Logger" doc:id="20de9d2c-ca2f-45c7-b566-70c83ca66acf" message='#[payload as String ++ "Yes you passed."]'/>
+		</foreach>
+	</flow>
+</mule>
