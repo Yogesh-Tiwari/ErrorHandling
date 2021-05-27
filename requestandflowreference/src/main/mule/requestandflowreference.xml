@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="a804b8f9-2dcd-434e-be6a-b3a245577d3d" >
+		<http:listener-connection host="0.0.0.0" port="8081" connectionIdleTimeout="300000"/>
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="eee0a800-3ddd-4b64-973c-5b1e5b95eb70">
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="Copy_of_parent_flow" doc:id="3b37af06-416e-4914-8e5e-c75b00f1a1a8">
+		<http:listener doc:name="GET /getChild" doc:id="ced204c0-4ac9-4d65-9d85-04b8a2cf6b87" config-ref="HTTP_Listener_config" path="/getChild" allowedMethods="GET" />
+		<set-payload value='This is parent flow' doc:name="Copy_of_array payload" doc:id="71aaea4d-cb33-4cc4-b910-86bcc1c139b5" />
+		<set-variable value='#["parentTemp"]' doc:name="temp_parent" doc:id="825b8525-069a-420e-9afd-7fd50d9f34db" variableName="temp_parent" />
+		<http:request method="GET" doc:name="Copy_of_Request" doc:id="5398607d-1f13-45d5-98c5-3aae4375b6fd" config-ref="HTTP_Request_configuration" path="/child" responseTimeout="300000" target="target"/>
+		<logger level="INFO" doc:name="Copy_of_Logger" doc:id="85d994cc-a035-480e-a64d-f5dac34ce4de" message="#[payload]" />
+	</flow>
+	<flow name="Copy_of_child_flow" doc:id="7594f54a-a505-437e-928c-b648388d4ad7" >
+		<http:listener doc:name="GET /child" doc:id="b9de4a38-73a5-473c-a5d9-e7e1fc3a69b6" config-ref="HTTP_Listener_config" path="/child" allowedMethods="GET" />
+		<set-variable value="ChildTemp" doc:name="temp_child" doc:id="01a0aed9-05b0-484f-9506-45cf318b5d92" variableName="temp_child"/>
+		<set-payload value='#["hello this is child flow"]' doc:name="Copy_of_setChildVar" doc:id="657fee9a-d6e8-422c-ac48-6820d35d749c" />
+		<logger level="INFO" doc:name="Copy_of_Logger" doc:id="543a57fd-8af4-4822-a2cb-03ec7bc599f5" message="#[payload]" />
+	</flow>
+	<flow name="Copy_of_Copy_of_parent_flow" doc:id="090c1324-1d38-41bd-999c-d549101473d6">
+		<http:listener doc:name="Copy_of_GET /getChildFlowRef" doc:id="2f1c3952-9066-445b-aeb4-bc0a2c1204df" config-ref="HTTP_Listener_config" path="/getChildFlowRef" allowedMethods="GET" />
+		<set-payload value="This is parent flow" doc:name="Copy_of_Copy_of_array payload" doc:id="1619a4eb-5a30-4617-b0d5-6dbc146fdef4" />
+		<set-variable value='#["parentTemp"]' doc:name="Copy_of_Copy_of_temp_parent" doc:id="ddbbddf5-520d-4ae2-aca8-187d8baa6793" variableName="temp_parent" />
+		<flow-ref doc:name="Flow Reference" doc:id="76a64e56-1bd4-430a-8695-c7486b0d5a55" name="Copy_of_child_flow" target="target"/>
+		<logger level="INFO" doc:name="Copy_of_Copy_of_Logger" doc:id="36c31a49-34d8-4eb1-bba8-ad4b639a33ef" message="#[payload]" />
+	</flow>
+</mule>

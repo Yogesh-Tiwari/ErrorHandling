@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="choice_routerFlow1" doc:id="6b466cd0-66e3-44a2-8677-0ddfcf259841">
+		<http:listener doc:name="GET /choiceCheck" doc:id="543fb4b2-a727-4670-8332-5d2a59200ccb" config-ref="HTTP_Listener_config" path="/choiceCheck" allowedMethods="GET"/>
+		<set-variable value="10" doc:name="toCheck" doc:id="7e1b05b4-8b95-44bf-ad3c-a9891562fc88" variableName="toCheck"/>
+		<choice doc:name="Choice" doc:id="334709f1-fb4d-4814-8c5b-7099a5653cd1" >
+			<when expression="#[vars.toCheck&gt;0]">
+				<logger level="INFO" doc:name="Logger" doc:id="ae8dfe88-c7f2-4f20-a170-59761dd4f312" message="greater than 0."/>
+			</when>
+			<when expression="#[vars.toCheck&lt;10]">
+				<logger level="INFO" doc:name="Logger" doc:id="d0daaaa6-777f-4caa-bcc5-2bd3e67ff805" message="less than 10"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="311918a6-0c25-4a93-a7e6-b75f70f42304" message="default"/>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
