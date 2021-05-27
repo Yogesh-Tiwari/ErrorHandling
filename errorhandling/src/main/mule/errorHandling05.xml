@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="errorHandling05Flow(parent)" doc:id="a4287c44-7f84-4901-aae4-c6edf5718a5b" >
+		<http:listener doc:name="GET /error05" doc:id="0d6a90a6-e7e1-4ab2-8efd-7d56bfce035e" config-ref="HTTP_Listener_config" path="/error05" allowedMethods="GET">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<flow-ref doc:name="Flow Reference" doc:id="429952fa-884f-4085-a5b0-7460e3a12e1d" name="errorHandling05Flow(child)"/>
+		<set-payload value="Success main flow" doc:name="Set Payload" doc:id="677c7296-2707-4a99-b858-2e22cf38d034" />
+	</flow>
+	<flow name="errorHandling05Flow(child)" doc:id="ef260b74-1f6e-4e8a-b50f-0a967c5190ac" >
+		<validation:is-number doc:name="Is number" doc:id="28a0597b-0710-4a3b-bb49-680320428c27" value="#[payload]" numberType="INTEGER"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="effbff13-901f-4ed9-8ebb-38633a214897" >
+				<set-payload value="Error: private flow" doc:name="Set Payload" doc:id="45150e07-5261-4057-b63d-5a600402f43d" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="parentFlow" doc:id="c906ee77-5301-4260-8b17-15244bb44720" >
+		<http:listener doc:name="GET /error02" doc:id="58da4f5d-7a6f-428d-9d78-8530718f7019" config-ref="HTTP_Listener_config" path="/error02" allowedMethods="GET">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value="before validation, in parentFlow." doc:name="Set Payload" doc:id="a2a52be3-7480-45c5-8b7e-59ae4f4daa31" />
+		<flow-ref doc:name="Flow Reference" doc:id="14938b35-11cc-468b-9ad5-1c2966848a81" name="childFlow"/>
+		<set-payload value="After validation. In parent Flow." doc:name="Set Payload" doc:id="6ecc9767-581c-4042-a64d-bb9c144f7658" />
+		<logger level="INFO" doc:name="Logger" doc:id="fb3150d1-5cb0-4845-8893-fe4fc3694423" />
+	</flow>
+	<flow name="childFlow" doc:id="aeea97a1-c680-45cf-b294-0a810a04a591" >
+		<set-payload value="Before validataion, In child flow." doc:name="Set Payload" doc:id="9f5d9129-2e3d-485d-beb5-0a9a9e1241c3" />
+		<validation:is-null doc:name="Is null" doc:id="91d7a244-ed86-4413-bd7f-02a0b0eb1226" value="#[payload]"/>
+		<set-payload value="After validation, in child flow." doc:name="Set Payload" doc:id="8b560e31-282a-4106-82fb-b618fdb6fb97" />
+		<logger level="INFO" doc:name="Logger" doc:id="1529ea28-54d1-422b-a246-494efd5a632f" />
+	</flow>
+</mule>

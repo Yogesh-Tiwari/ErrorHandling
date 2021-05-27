@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<flow name="errorHandling03Flow" doc:id="8bfbdbe8-5d0b-4186-84a8-dd8104043849" >
+		<http:listener doc:name="GET /error03" doc:id="0c263785-3772-4af5-914f-bb8f94e9bb91" config-ref="HTTP_Listener_config" path="/error03" allowedMethods="GET">
+			<http:error-response >
+				<http:body ><![CDATA[#[payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<set-payload value="before try block." doc:name="Set Payload" doc:id="1ff73455-7e0f-44c2-929c-7d88350bb60f" />
+		<try doc:name="Try" doc:id="ff9ac856-2802-4ef7-8c4a-5960cb70d2fc" >
+			<validation:is-null doc:name="Is null" doc:id="d945f4e3-a889-4797-aa73-7feafaad955f" value="#[payload]"/>
+			<error-handler>
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="678c555b-fe64-4585-aef4-91187a9cadc5" >
+					<set-payload value="error handled from inside try block, parent flow." doc:name="Set Payload" doc:id="411db5e0-4a79-4fe7-9c3c-0ce1c53379ca" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<set-payload value="After try block." doc:name="Set Payload" doc:id="c261b750-8508-43df-89b3-95ec62f537cf" />
+		<logger level="INFO" doc:name="Logger" doc:id="b1b8ab95-0d42-4062-b8fc-27ed9bbcaf00" />
+	</flow>
+	<flow name="errorHandling03Flow1" doc:id="9987a4ce-1ea5-4865-8407-2b8b8e8c2a9a" >
+		<set-payload value="Before try block, child flow." doc:name="Set Payload" doc:id="4cf03cbc-5629-49fb-92f4-bdeb85fd6816" />
+		<try doc:name="Try" doc:id="d404389f-2eb0-40bd-8eef-32b9fcf2fb8b" >
+			<validation:is-null doc:name="Is null" doc:id="f1e43dc4-a46d-4534-bd29-cc6cf967f47b" value="#[payload]"/>
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e1aba287-a31c-411e-8de4-3e04bc8da4f0" >
+					<set-payload value="error handled try block." doc:name="Set Payload" doc:id="0bd07cc5-a8b4-4d2e-81f5-d1e91395ff34" />
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<set-payload value="After try block, child flow." doc:name="Set Payload" doc:id="664dad28-2428-4711-8653-bedfcfdb0f06" />
+		<logger level="INFO" doc:name="Logger" doc:id="d40694fe-7289-4ef3-b75c-063328b2cf29" />
+	</flow>
+</mule>

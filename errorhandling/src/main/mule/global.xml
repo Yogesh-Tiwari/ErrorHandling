@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cce926d0-97bd-4b53-956a-faeabf0348e6" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="f3a946d8-9748-4005-8254-cf7fb842685e" file="config.yaml" />
+	<configuration doc:name="Configuration" doc:id="e58cf8a5-5ee9-4ad7-99d4-86938da93db5" defaultErrorHandler-ref="globalError_Handler" />
+	<error-handler name="globalError_Handler" doc:id="26b17c45-b92a-4893-a2e3-7cb71660a82b" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2800fb38-ea49-4a38-ab4c-3017ab7ec82f" >
+			<set-payload value="Error handled from gobal level." doc:name="Set Payload" doc:id="2d3db1c3-4806-43e7-88ba-4ba0cc35aca1" />
+		</on-error-continue>
+	</error-handler>
+</mule>

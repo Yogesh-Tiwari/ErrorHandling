@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="Copy_of_errorHandlingFlow" doc:id="1c6fcb45-a7e9-445d-a29b-880e9abe83c1" >
+		<http:listener doc:name="Listener" doc:id="2c53bde0-1ec6-41ec-a0f4-79d6fdf4a0ef" path="/errorCheck" config-ref="HTTP_Listener_config">
+			<http:error-response >
+				<http:body ><![CDATA[#[output application/json
+---
+payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<foreach doc:name="For Each" doc:id="8844cce9-7fa4-4ffc-894b-f85f684b50da" >
+			<try doc:name="Try" doc:id="9714e36f-042e-4e7b-98c7-ab8c7d683380" >
+				<validation:is-number numberType="INTEGER" doc:id="97822e9f-edca-4247-aa9d-8bbcb38b71d9" value="#[payload]"/>
+				<error-handler >
+					<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="708b45dc-137d-43f9-8cdc-b068344d4176" >
+						<logger level="INFO" doc:name="Logger" doc:id="bf36437f-13eb-4e27-bd2c-a7b9d5273754" message="Given input is not a number." />
+					</on-error-propagate>
+				</error-handler>
+			</try>
+			<logger level="INFO" doc:name="Logger" doc:id="2674d983-f944-4376-b7a6-1d1ee2fcce2e" message='#[payload as String ++ " Yes you passed."]' />
+		</foreach>
+		<logger level="INFO" doc:name="Logger" doc:id="a161d07e-32e0-493b-b876-a978a11962a9" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="2e1e53b9-5bcc-4952-a70b-542c89228404" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="cb9fd700-cb83-4120-9d25-e2f9e4c1f4c1" >
+				<set-payload value="This is response from on Error Continue from flow level." doc:name="Set Payload" doc:id="f72a575c-4abc-4038-acf8-a14a546a053f" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
